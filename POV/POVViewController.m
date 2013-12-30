@@ -21,7 +21,8 @@
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     NSDictionary *parameters = @{@"lat": @123.123,
                                  @"long": @456.456,
-                                 @"timestamp": @([[NSDate date] timeIntervalSince1970])};
+                                 @"timestamp": @([[NSDate date] timeIntervalSince1970]),
+                                 @"user": [[[UIDevice currentDevice] name] componentsSeparatedByString:@" "][0]};
     NSURL *filePath = [info objectForKey:UIImagePickerControllerMediaURL];
     [manager POST:@"http://192.168.112.148:3000/upload" parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         [formData appendPartWithFileURL:filePath name:@"video" error:nil];
