@@ -50,7 +50,8 @@
         picker.mediaTypes = @[(NSString *)kUTTypeMovie];
         picker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModeVideo;
         picker.allowsEditing = NO;
-        picker.videoQuality = UIImagePickerControllerQualityTypeLow;
+        picker.modalPresentationStyle = UIModalPresentationCurrentContext;
+        picker.videoQuality = UIImagePickerControllerQualityTypeMedium;
 
         [self presentViewController:picker animated:YES completion:nil];
     } else {
