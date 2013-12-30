@@ -23,6 +23,7 @@
 		9BC511401871689400EB463B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9BC5113E1871689400EB463B /* InfoPlist.strings */; };
 		9BC511421871689400EB463B /* POVTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BC511411871689400EB463B /* POVTests.m */; };
 		9BC5114C18717B8B00EB463B /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BC5114B18717B8B00EB463B /* MobileCoreServices.framework */; };
+		9BC511581871F6DE00EB463B /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BC511571871F6DE00EB463B /* CoreLocation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,7 @@
 		9BC5113F1871689400EB463B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		9BC511411871689400EB463B /* POVTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = POVTests.m; sourceTree = "<group>"; };
 		9BC5114B18717B8B00EB463B /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		9BC511571871F6DE00EB463B /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BC511581871F6DE00EB463B /* CoreLocation.framework in Frameworks */,
 				9BC5114C18717B8B00EB463B /* MobileCoreServices.framework in Frameworks */,
 				9BC511191871689400EB463B /* CoreGraphics.framework in Frameworks */,
 				9BC5111B1871689400EB463B /* UIKit.framework in Frameworks */,
@@ -109,6 +112,7 @@
 		9BC511151871689400EB463B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9BC511571871F6DE00EB463B /* CoreLocation.framework */,
 				9BC5114B18717B8B00EB463B /* MobileCoreServices.framework */,
 				9BC511161871689400EB463B /* Foundation.framework */,
 				9BC511181871689400EB463B /* CoreGraphics.framework */,

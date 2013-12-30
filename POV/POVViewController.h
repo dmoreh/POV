@@ -8,7 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#import <CoreLocation/CoreLocation.h>
 
-@interface POVViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface POVViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, CLLocationManagerDelegate> {
+    CLLocationManager *locationManager;
+}
 
 @end

@@ -19,8 +19,9 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     // Send the video to the server
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    NSDictionary *parameters = @{@"lat": @123.123,
-                                 @"long": @456.456,
+    CLLocationCoordinate2D coordinate = locationManager.location.coordinate;
+    NSDictionary *parameters = @{@"lat": @(coordinate.latitude),
+                                 @"long": @(coordinate.longitude),
                                  @"timestamp": @([[NSDate date] timeIntervalSince1970]),
                                  @"user": [[[UIDevice currentDevice] name] componentsSeparatedByString:@" "][0]};
     NSURL *filePath = [info objectForKey:UIImagePickerControllerMediaURL];
@@ -77,7 +78,8 @@
     [syncButton addTarget:self action:@selector(presentCameraView) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:syncButton];
     
-    NSLog(@"name: %@", [[UIDevice currentDevice] name]);
+    locationManager = [[CLLocationManager alloc] init];
+    [locationManager startUpdatingLocation];
 }
 
 - (void)didReceiveMemoryWarning
