@@ -27,8 +27,15 @@
         [formData appendPartWithFileURL:filePath name:@"video" error:nil];
     } success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"Success: %@", responseObject);
+        [picker dismissViewControllerAnimated:YES completion:nil];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"Error: %@", error);
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                        message:[NSString stringWithFormat:@"%@", error]
+                                                       delegate:self
+                                              cancelButtonTitle:@"Okay"
+                                              otherButtonTitles:nil];
+        [alert show];
     }];
 }
 
@@ -44,7 +51,7 @@
         picker.allowsEditing = NO;
         picker.videoQuality = UIImagePickerControllerQualityTypeLow;
 
-        [self presentViewController:picker animated:NO completion:nil];
+        [self presentViewController:picker animated:YES completion:nil];
     } else {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
                                                         message:@"This device does not have a camera."
@@ -60,11 +67,15 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [self presentCameraView];
+    
+    UIButton *syncButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 100, 50)];
+    [syncButton setCenter:CGPointMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame))];
+    [syncButton setTitle:@"Go" forState:UIControlStateNormal];
+    [syncButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
+    [syncButton addTarget:self action:@selector(presentCameraView) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:syncButton];
+    
+    NSLog(@"name: %@", [[UIDevice currentDevice] name]);
 }
 
 - (void)didReceiveMemoryWarning
