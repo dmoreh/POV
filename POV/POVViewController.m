@@ -7,7 +7,6 @@
 //
 
 #import "POVViewController.h"
-#import <AFNetworking/AFNetworking.h>
 
 @interface POVViewController ()
 
@@ -17,6 +16,9 @@
 
 #pragma mark - UIImagePickerControllerDelegate
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:picker.view animated:YES];
+    hud.labelText = @"Uploading...";
+    
     // Send the video to the server
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     CLLocationCoordinate2D coordinate = locationManager.location.coordinate;
@@ -30,8 +32,10 @@
     } success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"Success: %@", responseObject);
         [picker dismissViewControllerAnimated:YES completion:nil];
+        [hud hide:YES];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"Error: %@", error);
+        [hud hide:YES];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
                                                         message:[NSString stringWithFormat:@"%@", error]
                                                        delegate:self
