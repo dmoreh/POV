@@ -17,6 +17,9 @@
     CLLocationManager *locationManager;
     NSString *IPAddress;
     UITextField *IPTextField;
+    UIImagePickerController *picker;
+    float startTime;
+    float endTime;
 }
 
 @end

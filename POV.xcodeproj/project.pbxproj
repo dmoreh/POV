@@ -49,6 +49,9 @@
 		9B2A54D51872191C00C9F505 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		9B2A54D71872192500C9F505 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		9B2A54D91872192C00C9F505 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		9B2A54DB1872F60700C9F505 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		9B2A54DD1872F61000C9F505 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		9B2A54DF1872F62400C9F505 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		9BC511131871689400EB463B /* POV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = POV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9BC511161871689400EB463B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		9BC511181871689400EB463B /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -77,6 +80,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9B2A54E01872F62400C9F505 /* CoreVideo.framework in Frameworks */,
+				9B2A54DE1872F61000C9F505 /* AVFoundation.framework in Frameworks */,
+				9B2A54DC1872F60700C9F505 /* CoreMedia.framework in Frameworks */,
 				9B2A54DA1872192C00C9F505 /* SystemConfiguration.framework in Frameworks */,
 				9B2A54D81872192500C9F505 /* Security.framework in Frameworks */,
 				9B2A54D61872191C00C9F505 /* CFNetwork.framework in Frameworks */,
@@ -127,6 +133,9 @@
 		9BC511151871689400EB463B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9B2A54DF1872F62400C9F505 /* CoreVideo.framework */,
+				9B2A54DD1872F61000C9F505 /* AVFoundation.framework */,
+				9B2A54DB1872F60700C9F505 /* CoreMedia.framework */,
 				9B2A54D91872192C00C9F505 /* SystemConfiguration.framework */,
 				9B2A54D71872192500C9F505 /* Security.framework */,
 				9B2A54D51872191C00C9F505 /* CFNetwork.framework */,

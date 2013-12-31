@@ -15,45 +15,41 @@
 @implementation POVViewController
 
 #pragma mark - UIImagePickerControllerDelegate
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+- (void)imagePickerController:(UIImagePickerController *)thePicker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     // Show uploading HUD.
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:picker.view animated:YES];
     hud.labelText = @"Uploading...";
     
-    // Get common server time.
-    Firebase *offsetRef = [[Firebase alloc] initWithUrl:@"https://SampleChat.firebaseIO-demo.com/.info/serverTimeOffset"];
-    [offsetRef observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
-        double offset = [(NSNumber *)snapshot.value doubleValue];
-        double serverTimeMs = [[NSDate date] timeIntervalSince1970] * 1000.0 + offset;
+    // Upload the video, then dismiss modal view.
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    CLLocationCoordinate2D coordinate = locationManager.location.coordinate;
+    NSDictionary *parameters = @{@"lat": @(coordinate.latitude),
+                                 @"long": @(coordinate.longitude),
+                                 @"starttime": @(startTime),
+                                 @"endtime": @(endTime),
+                                 @"duration": @(endTime - startTime),
+                                 @"user": [[[UIDevice currentDevice] name] componentsSeparatedByString:@" "][0]};
+    NSLog(@"%@", parameters);
+    
+    NSString *uploadURL = [NSString stringWithFormat:@"%@/upload", IPAddress];
+    [manager POST:uploadURL parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        NSURL *filePath = [info objectForKey:UIImagePickerControllerMediaURL];
+        [formData appendPartWithFileURL:filePath name:@"video" error:nil];
+    } success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSLog(@"Success: %@", responseObject);
+        [picker dismissViewControllerAnimated:YES completion:nil];
+        [hud hide:YES];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Error: %@", error);
+        [picker dismissViewControllerAnimated:YES completion:nil];
+        [hud hide:YES];
         
-        // Upload the video, then dismiss modal view.
-        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-        CLLocationCoordinate2D coordinate = locationManager.location.coordinate;
-        NSDictionary *parameters = @{@"lat": @(coordinate.latitude),
-                                     @"long": @(coordinate.longitude),
-                                     @"timestamp": @(serverTimeMs),
-                                     @"user": [[[UIDevice currentDevice] name] componentsSeparatedByString:@" "][0]};
-        
-        NSString *uploadURL = [NSString stringWithFormat:@"%@/upload", IPAddress];
-        [manager POST:uploadURL parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-            NSURL *filePath = [info objectForKey:UIImagePickerControllerMediaURL];
-            [formData appendPartWithFileURL:filePath name:@"video" error:nil];
-        } success:^(AFHTTPRequestOperation *operation, id responseObject) {
-            NSLog(@"Success: %@", responseObject);
-            [picker dismissViewControllerAnimated:YES completion:nil];
-            [hud hide:YES];
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            NSLog(@"Error: %@", error);
-            [picker dismissViewControllerAnimated:YES completion:nil];
-            [hud hide:YES];
-            
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
-                                                            message:[NSString stringWithFormat:@"%@", error]
-                                                           delegate:self
-                                                  cancelButtonTitle:@"Okay"
-                                                  otherButtonTitles:nil];
-            [alert show];
-        }];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                        message:[NSString stringWithFormat:@"%@", error]
+                                                       delegate:self
+                                              cancelButtonTitle:@"Okay"
+                                              otherButtonTitles:nil];
+        [alert show];
     }];
 }
 
@@ -61,7 +57,14 @@
 - (void)presentCameraView
 {
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+        
+        UIView *overlayView = [[UIView alloc] initWithFrame:self.view.frame];
+        UIButton *recordButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 60, 60)];
+        recordButton.center = CGPointMake(CGRectGetMidX(self.view.frame), CGRectGetMaxY(self.view.frame) - CGRectGetMidY(recordButton.frame) - 10);
+        [recordButton addTarget:self action:@selector(recordButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+        [overlayView addSubview:recordButton];
+        
+        picker = [[UIImagePickerController alloc] init];
         picker.delegate = self;
         picker.sourceType = UIImagePickerControllerSourceTypeCamera;
         picker.mediaTypes = @[(NSString *)kUTTypeMovie];
@@ -69,6 +72,7 @@
         picker.allowsEditing = NO;
         picker.modalPresentationStyle = UIModalPresentationCurrentContext;
         picker.videoQuality = UIImagePickerControllerQualityTypeMedium;
+        picker.cameraOverlayView = overlayView;
         
         [self presentViewController:picker animated:YES completion:nil];
     } else {
@@ -92,6 +96,34 @@
         [IPTextField resignFirstResponder];
         IPTextField.hidden = YES;
     }
+}
+
+- (void)recordButtonPressed
+{
+    static BOOL isRecording = NO;
+    
+    BOOL wasRecording = isRecording;
+    isRecording = !isRecording;
+    
+    if (wasRecording) {
+        [picker stopVideoCapture];
+        [picker.cameraOverlayView setUserInteractionEnabled:NO];
+        picker.cameraOverlayView = nil;
+    } else {
+        [picker startVideoCapture];
+    }
+    
+    Firebase *offsetRef = [[Firebase alloc] initWithUrl:@"https://SampleChat.firebaseIO-demo.com/.info/serverTimeOffset"];
+    [offsetRef observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
+        float offset = [(NSNumber *)snapshot.value floatValue];
+        float serverTimeMs = [[NSDate date] timeIntervalSince1970] * 1000.0 + offset;
+        
+        if (wasRecording) {
+            endTime = serverTimeMs;
+        } else {
+            startTime = serverTimeMs;
+        }
+    }];
 }
 
 #pragma mark - View Lifecycle
