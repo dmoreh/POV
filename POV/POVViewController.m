@@ -16,32 +16,43 @@
 
 #pragma mark - UIImagePickerControllerDelegate
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+    // Show uploading HUD.
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:picker.view animated:YES];
     hud.labelText = @"Uploading...";
     
-    // Send the video to the server
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    CLLocationCoordinate2D coordinate = locationManager.location.coordinate;
-    NSDictionary *parameters = @{@"lat": @(coordinate.latitude),
-                                 @"long": @(coordinate.longitude),
-                                 @"timestamp": @([[NSDate date] timeIntervalSince1970]),
-                                 @"user": [[[UIDevice currentDevice] name] componentsSeparatedByString:@" "][0]};
-    NSURL *filePath = [info objectForKey:UIImagePickerControllerMediaURL];
-    [manager POST:@"http://192.168.112.148:3000/upload" parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-        [formData appendPartWithFileURL:filePath name:@"video" error:nil];
-    } success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSLog(@"Success: %@", responseObject);
-        [picker dismissViewControllerAnimated:YES completion:nil];
-        [hud hide:YES];
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"Error: %@", error);
-        [hud hide:YES];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
-                                                        message:[NSString stringWithFormat:@"%@", error]
-                                                       delegate:self
-                                              cancelButtonTitle:@"Okay"
-                                              otherButtonTitles:nil];
-        [alert show];
+    // Get common server time.
+    Firebase *offsetRef = [[Firebase alloc] initWithUrl:@"https://SampleChat.firebaseIO-demo.com/.info/serverTimeOffset"];
+    [offsetRef observeEventType:FEventTypeValue withBlock:^(FDataSnapshot *snapshot) {
+        double offset = [(NSNumber *)snapshot.value doubleValue];
+        double serverTimeMs = [[NSDate date] timeIntervalSince1970] * 1000.0 + offset;
+        
+        // Upload the video, then dismiss modal view.
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        CLLocationCoordinate2D coordinate = locationManager.location.coordinate;
+        NSDictionary *parameters = @{@"lat": @(coordinate.latitude),
+                                     @"long": @(coordinate.longitude),
+                                     @"timestamp": @(serverTimeMs),
+                                     @"user": [[[UIDevice currentDevice] name] componentsSeparatedByString:@" "][0]};
+
+        [manager POST:@"http://192.168.112.148:3000/upload" parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+            NSURL *filePath = [info objectForKey:UIImagePickerControllerMediaURL];
+            [formData appendPartWithFileURL:filePath name:@"video" error:nil];
+        } success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            NSLog(@"Success: %@", responseObject);
+            [picker dismissViewControllerAnimated:YES completion:nil];
+            [hud hide:YES];
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"Error: %@", error);
+            [picker dismissViewControllerAnimated:YES completion:nil];
+            [hud hide:YES];
+
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                            message:[NSString stringWithFormat:@"%@", error]
+                                                           delegate:self
+                                                  cancelButtonTitle:@"Okay"
+                                                  otherButtonTitles:nil];
+            [alert show];
+        }];
     }];
 }
 
@@ -57,7 +68,7 @@
         picker.allowsEditing = NO;
         picker.modalPresentationStyle = UIModalPresentationCurrentContext;
         picker.videoQuality = UIImagePickerControllerQualityTypeMedium;
-
+        
         [self presentViewController:picker animated:YES completion:nil];
     } else {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
