@@ -33,8 +33,9 @@
                                      @"long": @(coordinate.longitude),
                                      @"timestamp": @(serverTimeMs),
                                      @"user": [[[UIDevice currentDevice] name] componentsSeparatedByString:@" "][0]};
-
-        [manager POST:@"http://192.168.112.148:3000/upload" parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        
+        NSString *uploadURL = [NSString stringWithFormat:@"%@/upload", IPAddress];
+        [manager POST:uploadURL parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
             NSURL *filePath = [info objectForKey:UIImagePickerControllerMediaURL];
             [formData appendPartWithFileURL:filePath name:@"video" error:nil];
         } success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -45,7 +46,7 @@
             NSLog(@"Error: %@", error);
             [picker dismissViewControllerAnimated:YES completion:nil];
             [hud hide:YES];
-
+            
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
                                                             message:[NSString stringWithFormat:@"%@", error]
                                                            delegate:self
