@@ -80,18 +80,44 @@
     }
 }
 
+- (void)toggleIPField
+{
+    if (IPTextField.hidden) {
+        IPTextField.hidden = NO;
+    } else {
+        IPAddress = IPTextField.text;
+        [[NSUserDefaults standardUserDefaults] setValue:IPAddress forKey:@"IP"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        [IPTextField resignFirstResponder];
+        IPTextField.hidden = YES;
+    }
+}
+
 #pragma mark - View Lifecycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
-    UIButton *syncButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 100, 50)];
+    UIButton *syncButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 200, 50)];
     [syncButton setCenter:CGPointMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame))];
     [syncButton setTitle:@"Go" forState:UIControlStateNormal];
     [syncButton setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
     [syncButton addTarget:self action:@selector(presentCameraView) forControlEvents:UIControlEventTouchUpInside];
+    [syncButton addTarget:self action:@selector(toggleIPField) forControlEvents:UIControlEventTouchUpOutside];
     [self.view addSubview:syncButton];
+    
+    // Secret field to input IP Address
+    IPAddress = [[NSUserDefaults standardUserDefaults] valueForKey:@"IP"];
+    if (!IPAddress) {
+        IPAddress = @"http://192.168.112.148:3000";
+        [[NSUserDefaults standardUserDefaults] setValue:IPAddress forKey:@"IP"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    IPTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 300, 50)];
+    IPTextField.text = IPAddress;
+    IPTextField.hidden = YES;
+    [self.view addSubview:IPTextField];
     
     locationManager = [[CLLocationManager alloc] init];
     [locationManager startUpdatingLocation];

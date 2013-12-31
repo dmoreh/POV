@@ -15,6 +15,8 @@
 
 @interface POVViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, CLLocationManagerDelegate> {
     CLLocationManager *locationManager;
+    NSString *IPAddress;
+    UITextField *IPTextField;
 }
 
 @end
